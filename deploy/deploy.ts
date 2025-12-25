@@ -3,15 +3,23 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+  const { deploy, log } = hre.deployments;
 
-  const deployedFHECounter = await deploy("FHECounter", {
+  const confidentialUsdc = await deploy("ConfidentialUSDC", {
     from: deployer,
     log: true,
   });
 
-  console.log(`FHECounter contract: `, deployedFHECounter.address);
+  log(`ConfidentialUSDC contract: ${confidentialUsdc.address}`);
+
+  const phantomPad = await deploy("PhantomPad", {
+    from: deployer,
+    args: [confidentialUsdc.address],
+    log: true,
+  });
+
+  log(`PhantomPad contract: ${phantomPad.address}`);
 };
 export default func;
-func.id = "deploy_fheCounter"; // id required to prevent reexecution
-func.tags = ["FHECounter"];
+func.id = "deploy_phantompad"; // id required to prevent reexecution
+func.tags = ["ConfidentialUSDC", "PhantomPad"];
